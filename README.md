@@ -100,29 +100,36 @@ docker-compose restart api
 
 ## ARQUITECTURA (Hice lo mas rapido posible)
 
-flowchart TD
-    U[USUARIO / CLIENTE]
-
-    U -->|HTTP :80| NGINX[NGINX<br/>(Reverse Proxy)]
-
-    NGINX -->|HTTP :3000| API[API BACKEND<br/>(Node.js)]
-
-    API -->|SQL :5432| PG[(POSTGRESQL)]
-    API -->|HTTP /metrics| PROM[PROMETHEUS]
-
-    PROM -->|PromQL| GRAF[GRAFANA]
-
-    %% Optional grouping
-    subgraph BACKEND [API Backend]
-        API
-    end
-
-    subgraph OBS [Observabilidad]
-        PROM
-        GRAF
-    end
-
-
+CLIENTE
+       │
+       ▼
+┌─────────────────┐
+│   HTTP:80       │
+└────────┬────────┘
+         │
+         │
+         ▼
+┌─────────────────┐
+│     nginx       │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│    HTTP :3000   │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│  API NODE JS    │
+└────────┬────────┘
+    ┌────┴────┐
+    ▼         ▼
+┌─────────┐ ┌─────────┐ ┌─────────┐
+│   SQL   │ │  Metrics│→│PROMETHEU│
+└─────────┘ └─────────┘ └─────────┘
+    │                        │
+    ▼                        ▼
+   DB                     Grafana
 
 ## DECISIONES TECNICAS PROPIAS
 
@@ -136,12 +143,12 @@ flowchart TD
 **Estructura:**
 
 src/
-── config/         # Configuración (DB, Logger, Métricas,etc)
-── models/         # Modelos de datos o las tasks
-── controllers/    # Lógica de negocio
-── routes/         # Definimos los endpoints
-── middlewares/    # Middlewares (errores, métricas)
-── index.js        # archivo principal
+├── config/         # Configuración (DB, Logger, Métricas,etc)
+├── models/         # Modelos de datos o las tasks
+├── controllers/    # Lógica de negocio
+├── routes/         # Definimos los endpoints
+├── middlewares/    # Middlewares (errores, métricas)
+├── index.js        # archivo principal
 
 ## Dockerfile Multi-Stage
 - Imagen final más liviana
