@@ -100,22 +100,27 @@ docker-compose restart api
 
 ## ARQUITECTURA (Hice lo mas rapido posible)
 
-CLIENTE
-  |
-HTTP :80
-  |
-NGINX
-  |
-HTTP :3000
-  |
-API (Node.js)
-  |------|
-  |      |
-SQL    METRICS
-  |      |
-DB   PROMETHEUS
-          |
-       GRAFANA
+flowchart TD
+    U[USUARIO / CLIENTE]
+
+    U -->|HTTP :80| NGINX[NGINX<br/>(Reverse Proxy)]
+
+    NGINX -->|HTTP :3000| API[API BACKEND<br/>(Node.js)]
+
+    API -->|SQL :5432| PG[(POSTGRESQL)]
+    API -->|HTTP /metrics| PROM[PROMETHEUS]
+
+    PROM -->|PromQL| GRAF[GRAFANA]
+
+    %% Optional grouping
+    subgraph BACKEND [API Backend]
+        API
+    end
+
+    subgraph OBS [Observabilidad]
+        PROM
+        GRAF
+    end
 
 
 
