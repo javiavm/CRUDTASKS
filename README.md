@@ -100,58 +100,22 @@ docker-compose restart api
 
 ## ARQUITECTURA (Hice lo mas rapido posible)
 
-┌────────────────────────────────────────────────────────────────────┐
-│                         USUARIO / CLIENTE                           │
-└───────────────────────────────┬────────────────────────────────────┘
-                                │
-                                │ HTTP (Puerto 80)
-                                ▼
-┌────────────────────────────────────────────────────────────────────┐
-│                     NGINX (Reverse Proxy)                           │
-│  • Enrutamiento                                                     │
-│  • Load balancing                                                   │
-│  • Logs estructurados                                               │
-│  • Headers de seguridad                                             │
-└───────────────────────────────┬────────────────────────────────────┘
-                                │
-                                │ HTTP (Puerto 3000)
-                                ▼
-┌────────────────────────────────────────────────────────────────────┐
-│                    API BACKEND (Node.js)                            │
-│                                                                    │
-│  ┌────────────────────────────────────────────────────────────┐  │
-│  │                    ARQUITECTURA MVC                         │  │
-│  │                                                            │  │
-│  │  • Controllers   → Lógica de negocio                        │  │
-│  │  • Models        → Acceso a datos                           │  │
-│  │  • Routes        → Definición de endpoints                  │  │
-│  │  • Middlewares   → Métricas, errores                        │  │
-│  │  • Config        → DB, Logger, Metrics                      │  │
-│  └────────────────────────────────────────────────────────────┘  │
-│                                                                    │
-│  • Express.js                                                      │
-│  • Winston (Logs estructurados)                                   │
-│  • prom-client (Métricas)                                         │
-│  • Health checks                                                  │
-└───────────────────────┬───────────────────────────┬──────────────┘
-                        │                           │
-                        │ SQL (Puerto 5432)         │ HTTP (/metrics)
-                        ▼                           ▼
-┌──────────────────────────────┐     ┌──────────────────────────────┐
-│           POSTGRESQL         │     │          PROMETHEUS           │
-│  • Base de datos             │     │  • Recolección de métricas    │
-│  • Usuario no root           │     │  • Almacenamiento TSDB        │
-│  • Health checks             │     │  • Alertas                   │
-│  • Persistencia              │     └───────────────┬──────────────┘
-└──────────────────────────────┘                     │
-                                                      │ PromQL
-                                                      ▼
-                                       ┌──────────────────────────────┐
-                                       │            GRAFANA           │
-                                       │  • Dashboards                │
-                                       │  • Visualización             │
-                                       │  • Auto-provisioning         │
-                                       └──────────────────────────────┘
+CLIENTE
+  |
+HTTP :80
+  |
+NGINX
+  |
+HTTP :3000
+  |
+API (Node.js)
+  |------|
+  |      |
+SQL    METRICS
+  |      |
+DB   PROMETHEUS
+          |
+       GRAFANA
 
 
 
