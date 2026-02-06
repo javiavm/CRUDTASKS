@@ -1,0 +1,28 @@
+#Configuración de Prometheus
+global:
+  scrape_interval: 20s 
+  evaluation_interval: 20s
+  external_labels:
+    monitor: 'tasks-api-monitor'
+    environment: 'development'
+
+#recolección de métricas
+scrape_configs:
+  #job paea las task
+  - job_name: 'tasks-api'
+    static_configs:
+      - targets: ['api:3000']
+        labels:
+          service: 'tasks-api'
+          environment: 'development'
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+    scrape_timeout: 5s
+
+  #job para automonitoreo
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+        labels:
+          service: 'prometheus'
+    scrape_interval: 15s

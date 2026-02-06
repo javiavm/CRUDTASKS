@@ -1,0 +1,15 @@
+# Data Sources para Grafana
+apiVersion: 1
+
+datasources:
+  # Se ajusta prometheus como data principal
+  - name: Prometheus
+    type: prometheus
+    access: proxy
+    url: http://prometheus:9090
+    isDefault: true
+    editable: true
+    jsonData:
+      httpMethod: POST
+      timeInterval: 15s
+    version: 1
